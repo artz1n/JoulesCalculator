@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Joules</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1f2937" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 50%, #374151 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        
+        .result-animation {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        .projectile-item:hover {
+            background-color: rgba(55, 65, 81, 0.7);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-2 flex items-center justify-center gap-3">
+                    <i data-lucide="calculator" class="text-blue-400"></i>
+                    Calculadora de Joules
+                </h1>
+                <p class="text-gray-300">Calcule a energia cinética de projéteis</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <div class="glass-effect rounded-lg p-6 hover-lift">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-semibold text-white flex items-center gap-2 mb-2">
+                                <i data-lucide="target" class="text-orange-400"></i>
+                                Dados do Projétil
+                            </h2>
+                            <p class="text-gray-300 text-sm">Insira o peso e velocidade do projétil</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <label class="block text-white font-medium">Peso do Projétil</label>
+                                <div class="flex gap-2">
+                                    <input 
+                                        type="number" 
+                                        id="weight" 
+                                        placeholder="Digite o peso"
+                                        class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <select 
+                                        id="weightUnit"
+                                        class="w-32 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="gramas">Gramas</option>
+                                        <option value="grains">Grains</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-white font-medium">Velocidade do Projétil</label>
+                                <div class="flex gap-2">
+                                    <input 
+                                        type="number" 
+                                        id="velocity" 
+                                        placeholder="Digite a velocidade"
+                                        class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <select 
+                                        id="velocityUnit"
+                                        class="w-32 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="m/s">m/s</option>
+                                        <option value="fps">fps</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button 
+                                    id="calculateBtn"
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+                                >
+                                    Calcular Energia
+                                </button>
+                                
+                                <button 
+                                    id="saveBtn"
+                                    class="border border-gray-600 text-white hover:bg-gray-700 font-medium py-2 px-4 rounded-md transition-colors flex items-center gap-2"
+                                >
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Salvar
+                                </button>
+                            </div>
+
+                            <div id="result" class="hidden mt-6 p-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg border border-blue-500/30 result-animation">
+                                <div class="text-center">
+                                    <p class="text-gray-300 text-sm mb-1">Energia Cinética</p>
+                                    <p class="text-3xl font-bold text-white">
+                                        <span id="resultValue">0</span> 
+                                        <span class="text-lg text-blue-400">Joules</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="glass-effect rounded-lg p-6 hover-lift">
+                        <div class="mb-4">
+                            <h2 class="text-xl font-semibold text-white">Projéteis Salvos</h2>
+                            <p class="text-gray-300 text-sm">Clique para carregar os dados</p>
+                        </div>
+                        
+                        <div id="savedProjectiles">
+                            <p class="text-gray-400 text-center py-4">Nenhum projétil salvo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8 text-gray-400 text-sm">
+                <p>Fórmula: E = ½mv² | Energia Cinética em Joules</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="saveModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="glass-effect rounded-lg p-6 w-96 max-w-md mx-4">
+            <h3 class="text-xl font-semibold text-white mb-2">Salvar Projétil</h3>
+            <p class="text-gray-300 text-sm mb-4">Digite um nome para identificar este projétil</p>
+            
+            <input 
+                type="text" 
+                id="projectileName" 
+                placeholder="Nome do projétil"
+                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+            />
+            
+            <div class="flex gap-2">
+                <button 
+                    id="confirmSave"
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+                >
+                    Salvar
+                </button>
+                <button 
+                    id="cancelSave"
+                    class="border border-gray-600 text-white hover:bg-gray-700 font-medium py-2 px-4 rounded-md transition-colors"
+                >
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar ícones Lucide
+        lucide.createIcons();
+
+        // Variáveis globais
+        let savedProjectiles = JSON.parse(localStorage.getItem('savedProjectiles') || '[]');
+
+        // Elementos DOM
+        const weightInput = document.getElementById('weight');
+        const weightUnitSelect = document.getElementById('weightUnit');
+        const velocityInput = document.getElementById('velocity');
+        const velocityUnitSelect = document.getElementById('velocityUnit');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const resultDiv = document.getElementById('result');
+        const resultValue = document.getElementById('resultValue');
+        const saveModal = document.getElementById('saveModal');
+        const projectileNameInput = document.getElementById('projectileName');
+        const confirmSaveBtn = document.getElementById('confirmSave');
+        const cancelSaveBtn = document.getElementById('cancelSave');
+        const savedProjectilesDiv = document.getElementById('savedProjectiles');
+
+        // Funções de conversão
+        function convertWeightToGrams(weight, unit) {
+            if (unit === 'gramas') return parseFloat(weight);
+            if (unit === 'grains') return parseFloat(weight) * 0.0648;
+            return 0;
+        }
+
+        function convertVelocityToMS(velocity, unit) {
+            if (unit === 'm/s') return parseFloat(velocity);
+            if (unit === 'fps') return parseFloat(velocity) * 0.3048;
+            return 0;
+        }
+
+        // Função para calcular joules
+        function calculateJoules() {
+            const weight = weightInput.value;
+            const velocity = velocityInput.value;
+            
+            if (!weight || !velocity) return;
+
+            const weightInGrams = convertWeightToGrams(weight, weightUnitSelect.value);
+            const velocityInMS = convertVelocityToMS(velocity, velocityUnitSelect.value);
+            
+            const weightInKg = weightInGrams / 1000;
+            const energy = 0.5 * weightInKg * Math.pow(velocityInMS, 2);
+            
+            resultValue.textContent = energy.toFixed(2);
+            resultDiv.classList.remove('hidden');
+        }
+
+        // Função para salvar projétil
+        function saveProjectile() {
+            const name = projectileNameInput.value.trim();
+            const weight = weightInput.value;
+            
+            if (!name || !weight) return;
+
+            const newProjectile = {
+                id: Date.now(),
+                name: name,
+                weight: parseFloat(weight),
+                weightUnit: weightUnitSelect.value
+            };
+
+            savedProjectiles.push(newProjectile);
+            localStorage.setItem('savedProjectiles', JSON.stringify(savedProjectiles));
+            
+            projectileNameInput.value = '';
+            saveModal.classList.add('hidden');
+            renderSavedProjectiles();
+        }
+
+        // Função para carregar projétil
+        function loadProjectile(projectile) {
+            weightInput.value = projectile.weight;
+            weightUnitSelect.value = projectile.weightUnit;
+        }
+
+        // Função para deletar projétil
+        function deleteProjectile(id) {
+            savedProjectiles = savedProjectiles.filter(p => p.id !== id);
+            localStorage.setItem('savedProjectiles', JSON.stringify(savedProjectiles));
+            renderSavedProjectiles();
+        }
+
+        // Função para renderizar projéteis salvos
+        function renderSavedProjectiles() {
+            if (savedProjectiles.length === 0) {
+                savedProjectilesDiv.innerHTML = '<p class="text-gray-400 text-center py-4">Nenhum projétil salvo</p>';
+                return;
+            }
+
+            savedProjectilesDiv.innerHTML = savedProjectiles.map(projectile => `
+                <div class="projectile-item flex items-center justify-between p-3 bg-gray-700/50 rounded-lg cursor-pointer mb-2 transition-colors" onclick="loadProjectile(${JSON.stringify(projectile).replace(/"/g, '&quot;')})">
+                    <div>
+                        <p class="text-white font-medium">${projectile.name}</p>
+                        <p class="text-gray-400 text-sm">${projectile.weight} ${projectile.weightUnit}</p>
+                    </div>
+                    <button onclick="event.stopPropagation(); deleteProjectile(${projectile.id})" class="text-red-400 hover:text-red-300 p-1">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            // Reinicializar ícones após renderizar
+            lucide.createIcons();
+        }
+
+        // Event listeners
+        calculateBtn.addEventListener('click', calculateJoules);
+        
+        saveBtn.addEventListener('click', () => {
+            if (!weightInput.value) return;
+            saveModal.classList.remove('hidden');
+        });
+        
+        confirmSaveBtn.addEventListener('click', saveProjectile);
+        
+        cancelSaveBtn.addEventListener('click', () => {
+            saveModal.classList.add('hidden');
+            projectileNameInput.value = '';
+        });
+
+        // Fechar modal clicando fora
+        saveModal.addEventListener('click', (e) => {
+            if (e.target === saveModal) {
+                saveModal.classList.add('hidden');
+                projectileNameInput.value = '';
+            }
+        });
+
+        // Calcular automaticamente quando os valores mudarem
+        [weightInput, weightUnitSelect, velocityInput, velocityUnitSelect].forEach(element => {
+            element.addEventListener('input', () => {
+                if (weightInput.value && velocityInput.value) {
+                    calculateJoules();
+                }
+            });
+        });
+
+        // Inicializar
+        renderSavedProjectiles();
+
+        // SCRIPT ADICIONADO PARA REGISTRAR O SERVICE WORKER
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
